@@ -1,18 +1,28 @@
 use bevy::prelude::*;
 
-#[derive(Resource)]
-struct HelloTimer(Timer);
+const TIME_STEP: f32 = 1.0 / 60.0;
 
-fn hello_world(time: Res<Time>, mut timer: ResMut<HelloTimer>) {
-    if timer.0.tick(time.delta()).just_finished() {
-        println!("Hello Bevy!");
-    }
+fn hello_world() {
+    println!("Hello Bevy!");
 }
 
 fn main() {
     App::new()
-        .insert_resource(HelloTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
         .add_plugins(DefaultPlugins)
-        .add_systems(Update, hello_world)
+        .insert_resource(FixedTime::new_from_secs(TIME_STEP))
+        .add_systems(Startup, setup)
+        .add_systems(
+            FixedUpdate,
+            (
+                hello_world,
+                // player_movement_system,
+                // snap_to_player_system,
+                // rotate_to_player_system,
+            ),
+        )
+        .add_systems(Update, bevy::window::close_on_esc)
         .run();
 }
+
+// See https://github.com/bevyengine/bevy/blob/latest/examples/2d/rotation.rs for example.
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {}
